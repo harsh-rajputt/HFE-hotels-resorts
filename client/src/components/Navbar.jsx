@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 export default function Navbar({ variant = 'default' }) {
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -42,11 +43,33 @@ export default function Navbar({ variant = 'default' }) {
                     </button>
                 </div>
 
-                {/* Mobile Menu Button (Placeholder) */}
-                <div className="md:hidden text-brand-gold text-2xl cursor-pointer">
-                    ☰
+                {/* Mobile Menu Button */}
+                <div
+                    className="md:hidden text-brand-gold text-2xl cursor-pointer"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                    {isMenuOpen ? '✕' : '☰'}
                 </div>
             </div>
+
+            {/* Mobile Menu Dropdown */}
+            {isMenuOpen && (
+                <div className="md:hidden bg-white absolute top-full left-0 w-full shadow-xl border-t border-gray-100 py-4 px-6 flex flex-col space-y-4">
+                    <a href="/" className="text-brand-dark font-medium hover:text-brand-gold">Home</a>
+                    <div className="flex flex-col space-y-2 pl-4 border-l-2 border-brand-sand">
+                        <span className="text-gray-400 text-xs uppercase tracking-wider">Destinations</span>
+                        <a href="/shimla" className="text-brand-dark hover:text-brand-gold">Shimla</a>
+                        <a href="/rishikesh" className="text-brand-dark hover:text-brand-gold">Rishikesh</a>
+                        <a href="/ranikhet" className="text-brand-dark hover:text-brand-gold">Ranikhet</a>
+                    </div>
+                    <a href="/#about" className="text-brand-dark font-medium hover:text-brand-gold">About</a>
+                    <a href="/#contact" className="text-brand-dark font-medium hover:text-brand-gold">Contact</a>
+                    <a href="/gallery" className="text-brand-dark font-medium hover:text-brand-gold">Gallery</a>
+                    <button className="bg-brand-gold text-white px-6 py-2 rounded-none font-serif hover:bg-opacity-90 transition-all uppercase tracking-wider text-sm w-full">
+                        Book Now
+                    </button>
+                </div>
+            )}
         </nav>
     );
 }
