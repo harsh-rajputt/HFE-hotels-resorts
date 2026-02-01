@@ -10,7 +10,8 @@ export default function AdminGalleryManager() {
     }, []);
 
     const fetchImages = () => {
-        fetch('http://localhost:5000/api/gallery')
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        fetch(`${apiUrl}/gallery`)
             .then(res => res.json())
             .then(data => {
                 setImages(data);
@@ -26,7 +27,8 @@ export default function AdminGalleryManager() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fetch('http://localhost:5000/api/gallery', {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        fetch(`${apiUrl}/gallery`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newImage)
@@ -42,7 +44,8 @@ export default function AdminGalleryManager() {
     const handleDelete = (id) => {
         if (!window.confirm('Are you sure you want to delete this image?')) return;
 
-        fetch(`http://localhost:5000/api/gallery/${id}`, { method: 'DELETE' })
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        fetch(`${apiUrl}/gallery/${id}`, { method: 'DELETE' })
             .then(res => {
                 if (res.ok) {
                     setImages(images.filter(img => img._id !== id));

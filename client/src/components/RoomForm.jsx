@@ -22,8 +22,9 @@ export default function RoomForm({ room, onSuccess, onCancel }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
         const method = room ? 'PUT' : 'POST';
-        const url = room ? `http://localhost:5000/api/rooms/${room._id}` : 'http://localhost:5000/api/rooms';
+        const url = room ? `${apiUrl}/rooms/${room._id}` : `${apiUrl}/rooms`;
 
         fetch(url, {
             method,

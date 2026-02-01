@@ -8,7 +8,8 @@ export default function Gallery() {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        fetch('http://localhost:5000/api/gallery')
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        fetch(`${apiUrl}/gallery`)
             .then(res => res.json())
             .then(data => setPhotos(data))
             .catch(err => console.error(err));

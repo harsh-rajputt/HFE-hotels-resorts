@@ -6,14 +6,15 @@ export default function FeaturedRooms() {
 
     useEffect(() => {
         // Fetch from backend (ensure server is running on port 5000)
-        fetch('http://localhost:5000/api/rooms')
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        fetch(`${apiUrl}/rooms`)
             .then(res => res.json())
             .then(data => {
-                setRooms(data);
+                setRooms(data.slice(0, 3)); // Show only first 3 rooms
                 setLoading(false);
             })
             .catch(err => {
-                console.error('Failed to fetch rooms:', err);
+                console.error(err);
                 setLoading(false);
             });
     }, []);

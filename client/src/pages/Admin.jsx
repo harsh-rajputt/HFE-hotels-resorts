@@ -8,7 +8,8 @@ export default function Admin() {
     const [editingRoom, setEditingRoom] = useState(null);
 
     const fetchRooms = () => {
-        fetch('http://localhost:5000/api/rooms')
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        fetch(`${apiUrl}/rooms`)
             .then(res => res.json())
             .then(data => setRooms(data))
             .catch(err => console.error(err));
@@ -20,7 +21,8 @@ export default function Admin() {
 
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this room?')) {
-            fetch(`http://localhost:5000/api/rooms/${id}`, { method: 'DELETE' })
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            fetch(`${apiUrl}/rooms/${id}`, { method: 'DELETE' })
                 .then(() => fetchRooms())
                 .catch(err => console.error(err));
         }
