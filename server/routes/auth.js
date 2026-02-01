@@ -29,7 +29,12 @@ router.post('/login', async (req, res) => {
         res.json({ success: true, username: user.username });
 
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        console.error('LOGIN ERROR DETAILS:', err); // Log the full error object
+        console.error('Error Message:', err.message);
+        res.status(500).json({
+            message: 'Internal Server Error',
+            error: err.message // Send error back to client for visibility
+        });
     }
 });
 

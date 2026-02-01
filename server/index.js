@@ -27,8 +27,11 @@ app.get('/', (req, res) => {
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/hfe_hotels';
 
 mongoose.connect(MONGODB_URI)
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error('MongoDB connection error:', err));
+    .then(() => console.log('MongoDB connected successfully'))
+    .catch(err => {
+        console.error('MongoDB connection error:', err);
+        console.error('URI used:', MONGODB_URI.replace(/:([^:@]+)@/, ':****@')); // Hide password
+    });
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
