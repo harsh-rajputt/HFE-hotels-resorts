@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import RoomForm from '../components/RoomForm';
 import AdminGalleryManager from '../components/AdminGalleryManager';
+import AdminContactManager from '../components/AdminContactManager';
 
 export default function Admin() {
     const [rooms, setRooms] = useState([]);
@@ -60,6 +61,9 @@ export default function Admin() {
 
                 {/* Gallery Management Section */}
                 <AdminGalleryManager />
+
+                {/* Contact Messages Section */}
+                <AdminContactManager />
 
                 <RoomForm
                     room={editingRoom}

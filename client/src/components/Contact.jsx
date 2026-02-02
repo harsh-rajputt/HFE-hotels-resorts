@@ -1,4 +1,116 @@
-import React from 'react';
+import React, { useState } from 'react';
+
+function ContactForm() {
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        subject: '',
+        phone: '',
+        message: ''
+    });
+    const [status, setStatus] = useState(''); // 'sending', 'success', 'error'
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setStatus('sending');
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+        try {
+            const res = await fetch(`${apiUrl}/contact`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (res.ok) {
+                setStatus('success');
+                setFormData({ name: '', email: '', subject: '', phone: '', message: '' });
+                alert('Message sent successfully!');
+            } else {
+                setStatus('error');
+                alert('Failed to send message. Please try again.');
+            }
+        } catch (error) {
+            console.error(error);
+            setStatus('error');
+            alert('Error sending message.');
+        } finally {
+            setStatus('');
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+                <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Full Name"
+                    required
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded focus:outline-none focus:border-blue-500 transition-colors"
+                />
+            </div>
+            <div>
+                <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Email Address"
+                    required
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded focus:outline-none focus:border-blue-500 transition-colors"
+                />
+            </div>
+            <div>
+                <input
+                    type="text"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    placeholder="How can we help you?"
+                    required
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded focus:outline-none focus:border-blue-500 transition-colors"
+                />
+            </div>
+            <div>
+                <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="Phone"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded focus:outline-none focus:border-blue-500 transition-colors"
+                />
+            </div>
+            <div>
+                <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    rows="4"
+                    placeholder="Comments / Questions"
+                    required
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded focus:outline-none focus:border-blue-500 transition-colors resize-none"
+                ></textarea>
+            </div>
+            <div className="text-center">
+                <button
+                    type="submit"
+                    disabled={status === 'sending'}
+                    className={`bg-blue-500 text-white px-8 py-3 rounded font-medium hover:bg-blue-600 transition-colors w-full md:w-auto ${status === 'sending' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                    {status === 'sending' ? 'Sending...' : 'Send Message'}
+                </button>
+            </div>
+        </form>
+    );
+}
 
 export default function Contact() {
     return (
@@ -10,51 +122,7 @@ export default function Contact() {
                     <div className="w-full lg:w-1/2">
                         <div className="bg-white rounded-lg shadow-lg p-8 border-t-4 border-blue-500">
                             <h3 className="text-xl font-medium text-brand-dark mb-8">Get In Touch with:</h3>
-                            <form className="space-y-6">
-                                <div>
-                                    <input
-                                        type="text"
-                                        placeholder="Full Name"
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded focus:outline-none focus:border-blue-500 transition-colors"
-                                    />
-                                </div>
-                                <div>
-                                    <input
-                                        type="email"
-                                        placeholder="Email Address"
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded focus:outline-none focus:border-blue-500 transition-colors"
-                                    />
-                                </div>
-                                <div>
-                                    <input
-                                        type="text"
-                                        placeholder="How can we help you?"
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded focus:outline-none focus:border-blue-500 transition-colors"
-                                    />
-                                </div>
-                                <div>
-                                    <input
-                                        type="tel"
-                                        placeholder="Phone"
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded focus:outline-none focus:border-blue-500 transition-colors"
-                                    />
-                                </div>
-                                <div>
-                                    <textarea
-                                        rows="4"
-                                        placeholder="Comments / Questions"
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded focus:outline-none focus:border-blue-500 transition-colors resize-none"
-                                    ></textarea>
-                                </div>
-                                <div className="text-center">
-                                    <button
-                                        type="submit"
-                                        className="bg-blue-500 text-white px-8 py-3 rounded font-medium hover:bg-blue-600 transition-colors w-full md:w-auto"
-                                    >
-                                        Send Message
-                                    </button>
-                                </div>
-                            </form>
+                            <ContactForm />
                         </div>
                     </div>
 

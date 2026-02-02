@@ -7,6 +7,7 @@ import cors from 'cors';
 import roomRoutes from './routes/rooms.js';
 import galleryRoutes from './routes/gallery.js';
 import authRoutes from './routes/auth.js';
+import contactRoutes from './routes/contact.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use('/api/rooms', roomRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/contact', contactRoutes);
 
 app.get('/', (req, res) => {
     res.send('HFE Group Hotel Server is running');
