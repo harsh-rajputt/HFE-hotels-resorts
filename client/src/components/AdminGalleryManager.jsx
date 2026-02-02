@@ -28,15 +28,24 @@ export default function AdminGalleryManager() {
     const handleSubmit = (e) => {
         e.preventDefault();
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+        const formData = new FormData();
+        formData.append('title', newImage.title);
+        formData.append('category', newImage.category);
+        if (newImage.file) {
+            formData.append('image', newImage.file);
+        }
+
         fetch(`${apiUrl}/gallery`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newImage)
+            body: formData
         })
             .then(res => res.json())
             .then(data => {
                 setImages([data, ...images]);
-                setNewImage({ title: '', imageUrl: '', category: 'General' });
+                setNewImage({ title: '', imageUrl: '', category: 'General', file: null });
+                // Reset file input
+                e.target.reset();
             })
             .catch(err => console.error('Error adding image:', err));
     };
@@ -71,13 +80,12 @@ export default function AdminGalleryManager() {
                         className="p-2 border rounded focus:outline-none focus:border-brand-gold"
                     />
                     <input
-                        type="text"
-                        name="imageUrl"
-                        placeholder="Image URL"
-                        value={newImage.imageUrl}
-                        onChange={handleInputChange}
+                        type="file"
+                        name="image"
+                        onChange={(e) => setNewImage(prev => ({ ...prev, file: e.target.files[0] }))}
+                        accept="image/*"
                         required
-                        className="p-2 border rounded focus:outline-none focus:border-brand-gold"
+                        className="p-2 border rounded focus:outline-none focus:border-brand-gold bg-white"
                     />
                     <select
                         name="category"

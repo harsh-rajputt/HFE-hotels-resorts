@@ -1,5 +1,6 @@
 import express from 'express';
 import Gallery from '../models/Gallery.js';
+import upload from '../config/cloudinary.js';
 
 const router = express.Router();
 
@@ -14,14 +15,21 @@ router.get('/', async (req, res) => {
 });
 
 // POST new image
-router.post('/', async (req, res) => {
-    const gallery = new Gallery({
-        title: req.body.title,
-        imageUrl: req.body.imageUrl,
-        category: req.body.category
-    });
-
+router.post('/', upload.single('image'), async (req, res) => {
     try {
+        const galleryData = {
+            title: req.body.title,
+            category: req.body.category
+        };
+
+        if (req.file) {
+            galleryData.imageUrl = req.file.path;
+        } else if (req.body.imageUrl) {
+            // Fallback if URL is manually sent
+            galleryData.imageUrl = req.body.imageUrl;
+        }
+
+        const gallery = new Gallery(galleryData);
         const newImage = await gallery.save();
         res.status(201).json(newImage);
     } catch (err) {

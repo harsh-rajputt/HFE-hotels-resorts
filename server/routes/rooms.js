@@ -1,9 +1,9 @@
 import express from 'express';
 import Room from '../models/Room.js';
+import upload from '../config/cloudinary.js';
 
 const router = express.Router();
 
-// GET all rooms
 // GET all rooms
 router.get('/', async (req, res) => {
     try {
@@ -37,9 +37,14 @@ router.get('/', async (req, res) => {
 });
 
 // POST a new room (admin)
-router.post('/', async (req, res) => {
-    const room = new Room(req.body);
+router.post('/', upload.single('image'), async (req, res) => {
     try {
+        const roomData = req.body;
+        if (req.file) {
+            roomData.image = req.file.path;
+        }
+
+        const room = new Room(roomData);
         const newRoom = await room.save();
         res.status(201).json(newRoom);
     } catch (err) {
@@ -48,9 +53,14 @@ router.post('/', async (req, res) => {
 });
 
 // PUT (Update) a room
-router.put('/:id', async (req, res) => {
+router.put('/:id', upload.single('image'), async (req, res) => {
     try {
-        const updatedRoom = await Room.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const roomData = req.body;
+        if (req.file) {
+            roomData.image = req.file.path;
+        }
+
+        const updatedRoom = await Room.findByIdAndUpdate(req.params.id, roomData, { new: true });
         res.json(updatedRoom);
     } catch (err) {
         res.status(400).json({ message: err.message });
