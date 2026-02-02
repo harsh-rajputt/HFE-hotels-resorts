@@ -6,6 +6,8 @@ import FloatingWhatsApp from '../components/FloatingWhatsApp';
 export default function Gallery() {
     const [photos, setPhotos] = React.useState([]);
 
+    const [selectedImage, setSelectedImage] = React.useState(null);
+
     useEffect(() => {
         window.scrollTo(0, 0);
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -14,6 +16,16 @@ export default function Gallery() {
             .then(data => setPhotos(data))
             .catch(err => console.error(err));
     }, []);
+
+    const openLightbox = (image) => {
+        setSelectedImage(image);
+        document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+    };
+
+    const closeLightbox = () => {
+        setSelectedImage(null);
+        document.body.style.overflow = 'auto'; // Restore scrolling
+    };
 
     return (
         <div className="min-h-screen bg-white">
@@ -28,7 +40,11 @@ export default function Gallery() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {photos.map((item, index) => (
-                        <div key={item._id || index} className="group relative overflow-hidden rounded-xl shadow-lg aspect-video cursor-pointer">
+                        <div
+                            key={item._id || index}
+                            className="group relative overflow-hidden rounded-xl shadow-lg aspect-video cursor-pointer"
+                            onClick={() => openLightbox(item)}
+                        >
                             <img
                                 src={item.imageUrl}
                                 alt={item.title || `Gallery Image ${index + 1}`}
@@ -44,6 +60,28 @@ export default function Gallery() {
                     ))}
                 </div>
             </div>
+
+            {/* Lightbox Modal */}
+            {selectedImage && (
+                <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" onClick={closeLightbox}>
+                    <button
+                        className="absolute top-4 right-4 text-white text-4xl font-bold hover:text-[#E86C3F] transition-colors"
+                        onClick={closeLightbox}
+                    >
+                        &times;
+                    </button>
+                    <div className="max-w-5xl max-h-[90vh] relative" onClick={e => e.stopPropagation()}>
+                        <img
+                            src={selectedImage.imageUrl}
+                            alt={selectedImage.title || "Gallery View"}
+                            className="max-w-full max-h-[85vh] object-contain rounded-md shadow-2xl"
+                        />
+                        {selectedImage.title && (
+                            <p className="text-white text-center mt-4 text-xl font-serif">{selectedImage.title}</p>
+                        )}
+                    </div>
+                </div>
+            )}
 
             <Footer />
             <FloatingWhatsApp />
