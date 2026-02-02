@@ -4,14 +4,14 @@ import Room from '../models/Room.js';
 const router = express.Router();
 
 // GET all rooms
+// GET all rooms
 router.get('/', async (req, res) => {
     try {
-        const rooms = await Room.find();
-        // If no rooms, return mock data for demo
+        let rooms = await Room.find();
+        // If no rooms, seed mock data validly into DB so they have real IDs
         if (rooms.length === 0) {
-            return res.json([
+            const mockRooms = [
                 {
-                    _id: '1',
                     title: 'Luxury Suite Shimla',
                     description: 'Experience the mountains in comfort.',
                     price: 5000,
@@ -20,7 +20,6 @@ router.get('/', async (req, res) => {
                     location: 'Shimla'
                 },
                 {
-                    _id: '2',
                     title: 'River View Camp Rishikesh',
                     description: 'Adventure awaits by the river.',
                     price: 3000,
@@ -28,7 +27,8 @@ router.get('/', async (req, res) => {
                     image: 'https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?q=80&w=2070&auto=format&fit=crop',
                     location: 'Rishikesh'
                 }
-            ]);
+            ];
+            rooms = await Room.insertMany(mockRooms);
         }
         res.json(rooms);
     } catch (err) {

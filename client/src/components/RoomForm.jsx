@@ -31,12 +31,18 @@ export default function RoomForm({ room, onSuccess, onCancel }) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
         })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Failed to save room');
+                return res.json();
+            })
             .then(data => {
                 onSuccess();
                 if (!room) setFormData({ title: '', description: '', price: '', maxGuests: '', image: '', location: '' });
             })
-            .catch(err => console.error(err));
+            .catch(err => {
+                console.error(err);
+                alert('Error saving room. Please try again.');
+            });
     };
 
     return (
