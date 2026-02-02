@@ -64,7 +64,8 @@ export default function Footer() {
                 </div>
 
                 <div className="text-center text-xs text-gray-600 mt-12">
-                    © 2026 The HFE Group. All rights reserved.
+                    <p>© 2026 The HFE Group. All rights reserved.</p>
+                    <p className="mt-2">Designed & Developed by <a href="https://my-portfolio-delta-mocha-43.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-brand-gold hover:text-white transition-colors">Harsh Raj</a></p>
                 </div>
             </div>
         </footer>
