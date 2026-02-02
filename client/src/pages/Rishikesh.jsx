@@ -50,7 +50,7 @@ export default function Rishikesh() {
                             Uttarakhand, is a beautiful state in northern India, nestled in the Himalayas. It's a treasure trove of natural wonders, spiritual significance, and adventure opportunities like: Breathtaking mountains, valleys, lakes, Sacred Hindu pilgrimage sites like Char Dham (Yamunotri, Gangotri, Kedarnath, and Badrinath), Scenic hill stations, Adventure sports, Rich cultural heritage, Abundant wildlife and many more.
                         </p>
 
-                        <p className="text-[#E86C3F] font-bold font-sans leading-relaxed text-justify mb-4">
+                        <p className="text-gray-600 font-sans leading-relaxed text-justify mb-4">
                             Experience the ultimate blend of luxury and wildlife at Rajaji Forest Castle, expertly managed by The HFE Group of Hotels & Resorts. Nestled in the Cheela range of Rajaji National Park, our resort offers a tranquil retreat amidst nature's splendor. Enjoy a memorable vacation in our 8 Standard Rooms, 7 Deluxe Rooms, and 1 Family Suite, carefully designed to blend seamlessly into the natural surroundings. Each cottage boasts spacious rooms, baths, and private gardens, perfect for relaxation. Unwind by our serene swimming pool, surrounded by lush greenery, or embark on guided safaris, cycling, and walking tours to discover the unique flora and fauna of Rajaji National Park in style and comfort.
                         </p>
 
