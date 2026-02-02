@@ -51,7 +51,7 @@ export default function Shimla() {
                         </p>
 
                         <h3 className="text-2xl font-bold text-gray-800 mb-3">Clouds Hill-Top Camp</h3>
-                        <p className="text-[#E86C3F] font-bold font-sans leading-relaxed text-justify mb-8">
+                        <p className="text-gray-600 font-sans leading-relaxed text-justify mb-8">
                             Escape to the enchanting Clouds Hill-Top Camp, nestled midway between Chail and Kufri in the Shimla District. Surrounded by lush apple orchards and majestic mountains, our eco-friendly mud houses and adventure tents offer breathtaking views of the hills and valleys. Every accommodation boasts stunning sunrise, sunset, and valley views, providing a tranquil retreat amidst nature's splendor. Under the expert management of The HFE Group of Hotels & Resorts, enjoy adventurous and comfortable stays with all essential amenities.
                         </p>
 
