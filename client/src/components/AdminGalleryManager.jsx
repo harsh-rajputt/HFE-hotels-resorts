@@ -69,7 +69,7 @@ export default function AdminGalleryManager() {
 
             {/* Add Image Form */}
             <form onSubmit={handleSubmit} className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <h3 className="text-lg font-semibold mb-4 text-brand-dark">Add New Application Image</h3>
+                <h3 className="text-lg font-semibold mb-4 text-brand-dark">Add New Gallery Item (Image/Video)</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <input
                         type="text"
@@ -83,7 +83,7 @@ export default function AdminGalleryManager() {
                         type="file"
                         name="image"
                         onChange={(e) => setNewImage(prev => ({ ...prev, file: e.target.files[0] }))}
-                        accept="image/*"
+                        accept="image/*,video/*"
                         required
                         className="p-2 border rounded focus:outline-none focus:border-brand-gold bg-white"
                     />
@@ -112,7 +112,11 @@ export default function AdminGalleryManager() {
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     {images.map(img => (
                         <div key={img._id} className="relative group border rounded-lg overflow-hidden">
-                            <img src={img.imageUrl} alt={img.title} className="w-full h-32 object-cover" />
+                            {img.type === 'video' ? (
+                                <video src={img.imageUrl} className="w-full h-32 object-cover" muted />
+                            ) : (
+                                <img src={img.imageUrl} alt={img.title} className="w-full h-32 object-cover" />
+                            )}
                             <div className="p-2 bg-white text-xs">
                                 <p className="font-bold truncate">{img.title || 'Untitled'}</p>
                                 <p className="text-gray-500">{img.category}</p>

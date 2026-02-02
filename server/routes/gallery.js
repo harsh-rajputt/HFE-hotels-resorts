@@ -24,6 +24,12 @@ router.post('/', upload.single('image'), async (req, res) => {
 
         if (req.file) {
             galleryData.imageUrl = req.file.path;
+            // Determine type based on mimetype
+            if (req.file.mimetype.startsWith('video/')) {
+                galleryData.type = 'video';
+            } else {
+                galleryData.type = 'image';
+            }
         } else if (req.body.imageUrl) {
             // Fallback if URL is manually sent
             galleryData.imageUrl = req.body.imageUrl;
