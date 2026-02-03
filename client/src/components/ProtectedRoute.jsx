@@ -1,24 +1,17 @@
-import React, { useEffect, useState } from 'react';
-
-// Use a simpler approach for now directly in the component or via a wrapper
-// Since we are using basic localStorage auth logic in Login.jsx
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function ProtectedRoute({ children }) {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const { isAuthenticated } = useAuth();
 
-    useEffect(() => {
-        const auth = localStorage.getItem('isAuthenticated');
-        if (auth === 'true') {
-            setIsAuthenticated(true);
-        } else {
-            // Redirect to login if not authenticated
-            window.location.href = '/login';
-        }
-        setLoading(false);
-    }, []);
+    // We can add a loading state here if we were checking auth asynchronously via API
+    // But since we sync from localStorage on mount in context, it's pretty instant.
+    // If we wanted to be stricter, we'd wait for a 'loading' flag from context.
 
-    if (loading) return null; // Or a loading spinner
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
 
-    return isAuthenticated ? children : null;
+    return children;
 }

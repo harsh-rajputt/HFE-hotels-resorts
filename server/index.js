@@ -9,6 +9,8 @@ import galleryRoutes from './routes/gallery.js';
 import authRoutes from './routes/auth.js';
 import contactRoutes from './routes/contact.js';
 
+import { errorHandler } from './middleware/errorMiddleware.js';
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -24,6 +26,9 @@ app.use('/api/contact', contactRoutes);
 app.get('/', (req, res) => {
     res.send('HFE Group Hotel Server is running');
 });
+
+// Error Handler (must be last)
+app.use(errorHandler);
 
 // Database Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/hfe_hotels';

@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 export default function Login() {
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+
+        const toastId = toast.loading('Logging in...');
 
         try {
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -25,18 +27,16 @@ export default function Login() {
             const data = await response.json();
 
             if (response.ok) {
-                // Store auth flag and token in localStorage
-                localStorage.setItem('isAuthenticated', 'true');
-                localStorage.setItem('username', data.username);
-                if (data.token) {
-                    localStorage.setItem('token', data.token);
-                }
-                navigate('/admin'); // Redirect to admin dashboard
+                login({ username: data.username }, data.token);
+                toast.success('Welcome back, Admin!', { id: toastId });
+                navigate('/admin');
             } else {
                 setError(data.message || 'Login failed');
+                toast.error(data.message || 'Login failed', { id: toastId });
             }
         } catch (err) {
             setError('Something went wrong. Please try again.');
+            toast.error('Connection error', { id: toastId });
         }
     };
 

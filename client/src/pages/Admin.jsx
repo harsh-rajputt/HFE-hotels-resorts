@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import RoomForm from '../components/RoomForm';
 import AdminGalleryManager from '../components/AdminGalleryManager';
@@ -21,18 +23,32 @@ export default function Admin() {
         fetchRooms();
     }, []);
 
+    const { token, logout } = useAuth();
+    const navigate = useNavigate();
+
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this room?')) {
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-            const token = localStorage.getItem('token');
+            const toastId = toast.loading('Deleting room...');
+
             fetch(`${apiUrl}/rooms/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             })
-                .then(() => fetchRooms())
-                .catch(err => console.error(err));
+                .then(res => {
+                    if (!res.ok) throw new Error('Failed to delete');
+                    return res.json();
+                })
+                .then(() => {
+                    toast.success('Room deleted successfully', { id: toastId });
+                    fetchRooms();
+                })
+                .catch(err => {
+                    console.error(err);
+                    toast.error('Failed to delete room', { id: toastId });
+                });
         }
     };
 
@@ -46,12 +62,10 @@ export default function Admin() {
         fetchRooms();
     };
 
-    const navigate = useNavigate();
     const handleLogout = () => {
-        localStorage.removeItem('isAuthenticated');
-        localStorage.removeItem('username');
-        localStorage.removeItem('token');
+        logout();
         navigate('/login');
+        toast.success('Logged out successfully');
     };
 
     return (

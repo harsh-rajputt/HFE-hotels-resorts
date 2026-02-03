@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 
 export default function RoomForm({ room, onSuccess, onCancel }) {
     const [formData, setFormData] = useState({
@@ -25,11 +27,15 @@ export default function RoomForm({ room, onSuccess, onCancel }) {
         setImageFile(e.target.files[0]);
     };
 
+    const { token } = useAuth();
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
         const method = room ? 'PUT' : 'POST';
         const url = room ? `${apiUrl}/rooms/${room._id}` : `${apiUrl}/rooms`;
+
+        const toastId = toast.loading(room ? 'Updating room...' : 'Creating room...');
 
         const data = new FormData();
         data.append('title', formData.title);
@@ -37,25 +43,13 @@ export default function RoomForm({ room, onSuccess, onCancel }) {
         data.append('price', formData.price);
         data.append('maxGuests', formData.maxGuests);
         data.append('location', formData.location);
-        // Only append image if a file is selected or if we want to preserve the existing one (though backend handles preservation if no file sent)
-        // Actually, for file upload, we usually only send 'image' if there's a new file.
-        // But if it's a string (URL) from existing room, we might want to send it?
-        // Our backend logic: if (req.file) update image.
-        // If we don't send image field, it won't be updated.
-        // But for POST, we need an image.
+
         if (imageFile) {
             data.append('image', imageFile);
         } else if (formData.image && typeof formData.image === 'string') {
-            // If it's a URL (existing image), we can send it as text, but multer might ignore it if it expects a file for 'image' field?
-            // Actually, multer processes 'image' field. If it's not a file, req.file is undefined.
-            // But verify if backend accepts body.image if req.file is missing.
-            // My backend code: if (req.file) roomData.image = req.file.path.
-            // It also takes `const roomData = req.body;`.
-            // So if I append `image` as string to FormData, it will be in req.body.image.
             data.append('image', formData.image);
         }
 
-        const token = localStorage.getItem('token');
         fetch(url, {
             method,
             headers: {
@@ -68,6 +62,7 @@ export default function RoomForm({ room, onSuccess, onCancel }) {
                 return res.json();
             })
             .then(data => {
+                toast.success(room ? 'Room updated!' : 'Room created!', { id: toastId });
                 onSuccess();
                 if (!room) {
                     setFormData({ title: '', description: '', price: '', maxGuests: '', image: '', location: '' });
@@ -76,7 +71,7 @@ export default function RoomForm({ room, onSuccess, onCancel }) {
             })
             .catch(err => {
                 console.error(err);
-                alert('Error saving room. Please try again.');
+                toast.error('Error saving room. Please try again.', { id: toastId });
             });
     };
 

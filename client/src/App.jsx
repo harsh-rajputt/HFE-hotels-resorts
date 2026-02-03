@@ -11,6 +11,8 @@ import FloatingWhatsApp from './components/FloatingWhatsApp'
 
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './context/AuthContext';
 import Home from './pages/Home';
 import Admin from './pages/Admin';
 import Shimla from './pages/Shimla';
@@ -23,22 +25,25 @@ import FloatingWhatsApp from './components/FloatingWhatsApp';
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="antialiased">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/shimla" element={<Shimla />} />
-          <Route path="/rishikesh" element={<Rishikesh />} />
-          <Route path="/ranikhet" element={<Ranikhet />} />
-          <Route path="/gallery" element={<Gallery />} />
-          {/* Fallback for unknown routes */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        <FloatingWhatsApp />
-      </div>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <div className="antialiased">
+          <Toaster position="top-right" />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/shimla" element={<Shimla />} />
+            <Route path="/rishikesh" element={<Rishikesh />} />
+            <Route path="/ranikhet" element={<Ranikhet />} />
+            <Route path="/gallery" element={<Gallery />} />
+            {/* Fallback for unknown routes */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          <FloatingWhatsApp />
+        </div>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
