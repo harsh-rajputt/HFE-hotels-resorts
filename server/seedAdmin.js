@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import User from './models/User.js';
+import bcrypt from 'bcryptjs';
 import 'dotenv/config';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/hfe_hotels';
@@ -9,17 +10,19 @@ mongoose.connect(MONGODB_URI)
         console.log('Connected to MongoDB for seeding...');
 
         try {
+            const hashedPassword = await bcrypt.hash('adminpassword123', 10);
+
             const existingAdmin = await User.findOne({ username: 'admin' });
             if (existingAdmin) {
                 console.log('Admin user already exists. Updating password to ensure match...');
-                existingAdmin.password = 'adminpassword123';
+                existingAdmin.password = hashedPassword;
                 await existingAdmin.save();
-                console.log('Admin password updated to: adminpassword123');
+                console.log('Admin password updated to: adminpassword123 (hashed)');
             } else {
                 console.log('Admin user not found. Creating new admin...');
                 const admin = new User({
                     username: 'admin',
-                    password: 'adminpassword123'
+                    password: hashedPassword
                 });
                 await admin.save();
                 console.log('Admin user created successfully.');

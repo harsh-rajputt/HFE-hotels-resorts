@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -6,6 +7,8 @@ export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,10 +25,13 @@ export default function Login() {
             const data = await response.json();
 
             if (response.ok) {
-                // Store auth flag in localStorage
+                // Store auth flag and token in localStorage
                 localStorage.setItem('isAuthenticated', 'true');
                 localStorage.setItem('username', data.username);
-                window.location.href = '/admin'; // Redirect to admin dashboard
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                }
+                navigate('/admin'); // Redirect to admin dashboard
             } else {
                 setError(data.message || 'Login failed');
             }

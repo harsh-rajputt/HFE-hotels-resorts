@@ -55,8 +55,12 @@ export default function RoomForm({ room, onSuccess, onCancel }) {
             data.append('image', formData.image);
         }
 
+        const token = localStorage.getItem('token');
         fetch(url, {
             method,
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
             body: data
         })
             .then(res => {

@@ -1,6 +1,7 @@
 import express from 'express';
 import Room from '../models/Room.js';
 import upload from '../config/cloudinary.js';
+import { verifyToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -37,7 +38,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST a new room (admin)
-router.post('/', upload.single('image'), async (req, res) => {
+router.post('/', verifyToken, upload.single('image'), async (req, res) => {
     try {
         const roomData = req.body;
         if (req.file) {
@@ -53,7 +54,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 });
 
 // PUT (Update) a room
-router.put('/:id', upload.single('image'), async (req, res) => {
+router.put('/:id', verifyToken, upload.single('image'), async (req, res) => {
     try {
         const roomData = req.body;
         if (req.file) {
@@ -68,7 +69,7 @@ router.put('/:id', upload.single('image'), async (req, res) => {
 });
 
 // DELETE a room
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
     try {
         await Room.findByIdAndDelete(req.params.id);
         res.json({ message: 'Room deleted' });

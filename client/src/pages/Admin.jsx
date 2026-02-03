@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import RoomForm from '../components/RoomForm';
 import AdminGalleryManager from '../components/AdminGalleryManager';
@@ -23,7 +24,13 @@ export default function Admin() {
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this room?')) {
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-            fetch(`${apiUrl}/rooms/${id}`, { method: 'DELETE' })
+            const token = localStorage.getItem('token');
+            fetch(`${apiUrl}/rooms/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
                 .then(() => fetchRooms())
                 .catch(err => console.error(err));
         }
@@ -39,10 +46,12 @@ export default function Admin() {
         fetchRooms();
     };
 
+    const navigate = useNavigate();
     const handleLogout = () => {
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('username');
-        window.location.href = '/login';
+        localStorage.removeItem('token');
+        navigate('/login');
     };
 
     return (

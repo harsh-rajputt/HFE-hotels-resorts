@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Hero() {
     return (
@@ -24,11 +25,11 @@ export default function Hero() {
                 </p>
 
                 <div className="animate-fade-in-up delay-300">
-                    <a href="/gallery">
+                    <Link to="/gallery">
                         <button className="border-2 border-white text-white px-8 py-3 hover:bg-white hover:text-brand-dark transition-all duration-300 font-serif uppercase tracking-widest text-sm">
                             Gallery
                         </button>
-                    </a>
+                    </Link>
                 </div>
             </div>
 

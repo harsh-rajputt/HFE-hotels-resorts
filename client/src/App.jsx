@@ -9,34 +9,38 @@ import Login from './pages/Login'
 import ProtectedRoute from './components/ProtectedRoute'
 import FloatingWhatsApp from './components/FloatingWhatsApp'
 
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Home from './pages/Home';
+import Admin from './pages/Admin';
+import Shimla from './pages/Shimla';
+import Rishikesh from './pages/Rishikesh';
+import Ranikhet from './pages/Ranikhet';
+import Gallery from './pages/Gallery';
+import Login from './pages/Login';
+import ProtectedRoute from './components/ProtectedRoute';
+import FloatingWhatsApp from './components/FloatingWhatsApp';
+
 function App() {
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
-
-  useEffect(() => {
-    const handlePopState = () => setCurrentPath(window.location.pathname);
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
-  const renderPage = () => {
-    // Normalize path to handle potential trailing slashes or case sensitivity if needed
-    const path = currentPath.toLowerCase().replace(/\/$/, "");
-
-    if (path === '/admin') return <ProtectedRoute><Admin /></ProtectedRoute>;
-    if (path === '/login') return <Login />;
-    if (path === '/shimla') return <Shimla />;
-    if (path === '/rishikesh') return <Rishikesh />;
-    if (path === '/ranikhet') return <Ranikhet />;
-    if (path === '/gallery') return <Gallery />;
-    return <Home />;
-  };
-
   return (
-    <div className="antialiased">
-      {renderPage()}
-      <FloatingWhatsApp />
-    </div>
-  )
+    <BrowserRouter>
+      <div className="antialiased">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/shimla" element={<Shimla />} />
+          <Route path="/rishikesh" element={<Rishikesh />} />
+          <Route path="/ranikhet" element={<Ranikhet />} />
+          <Route path="/gallery" element={<Gallery />} />
+          {/* Fallback for unknown routes */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+        <FloatingWhatsApp />
+      </div>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
+

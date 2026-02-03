@@ -1,5 +1,7 @@
 import express from 'express';
 import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
@@ -9,8 +11,7 @@ router.post('/login', async (req, res) => {
 
     try {
         console.log('Login attempt for:', username);
-        // Simple plain text password check for this MVP as requested
-        // In production, use bcrypt for hashing
+
         const user = await User.findOne({ username });
 
         if (!user) {
@@ -18,35 +19,52 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        console.log('User found:', user.username);
-        console.log('Password match:', user.password === password);
+        const isMatch = await bcrypt.compare(password, user.password);
 
-        if (user.password !== password) {
+        if (!isMatch) {
+            console.log('Invalid password');
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // Return a simple success flag/dummy token
-        res.json({ success: true, username: user.username });
+        // Generate JWT Token
+        const token = jwt.sign(
+            { id: user._id, username: user.username },
+            process.env.JWT_SECRET || 'dev_secret_key_123',
+            { expiresIn: '1d' }
+        );
+
+        console.log('Login successful for:', username);
+
+        res.json({
+            success: true,
+            username: user.username,
+            token
+        });
 
     } catch (err) {
-        console.error('LOGIN ERROR DETAILS:', err); // Log the full error object
-        console.error('Error Message:', err.message);
-        res.status(500).json({
-            message: 'Internal Server Error',
-            error: err.message // Send error back to client for visibility
-        });
+        console.error('LOGIN ERROR:', err);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 
-// Seed Admin (One-time use helper)
+// Seed Admin (Updated to hash password)
 router.post('/seed', async (req, res) => {
     try {
+        // Check if admin already exists to prevent duplicates or overwrite
+        const existingAdmin = await User.findOne({ username: 'admin' });
+        if (existingAdmin) {
+            return res.status(400).json({ message: 'Admin already exists' });
+        }
+
+        const hashedPassword = await bcrypt.hash('adminpassword123', 10);
+
         const admin = new User({
             username: 'admin',
-            password: 'adminpassword123'
+            password: hashedPassword
         });
+
         await admin.save();
-        res.json({ message: 'Admin created' });
+        res.json({ message: 'Admin created with hashed password' });
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
