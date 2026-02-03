@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 export default function AdminGalleryManager() {
     const [images, setImages] = useState([]);
@@ -29,6 +30,12 @@ export default function AdminGalleryManager() {
         e.preventDefault();
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+        const file = newImage.file;
+        const isVideo = file && file.type.startsWith('video');
+        const uploadType = isVideo ? 'Video' : 'Image';
+
+        const toastId = toast.loading(`Uploading ${uploadType.toLowerCase()}... Please wait.`);
+
         const formData = new FormData();
         formData.append('title', newImage.title);
         formData.append('category', newImage.category);
@@ -44,10 +51,13 @@ export default function AdminGalleryManager() {
             .then(data => {
                 setImages([data, ...images]);
                 setNewImage({ title: '', imageUrl: '', category: 'General', file: null });
-                // Reset file input
                 e.target.reset();
+                toast.success(`${uploadType} uploaded successfully!`, { id: toastId });
             })
-            .catch(err => console.error('Error adding image:', err));
+            .catch(err => {
+                console.error('Error adding image:', err);
+                toast.error(`Failed to upload ${uploadType.toLowerCase()}.`, { id: toastId });
+            });
     };
 
     const handleDelete = (id) => {
