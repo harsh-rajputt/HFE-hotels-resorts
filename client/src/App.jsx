@@ -1,14 +1,3 @@
-import React, { useState, useEffect } from 'react'
-import Home from './pages/Home'
-import Admin from './pages/Admin'
-import Shimla from './pages/Shimla'
-import Rishikesh from './pages/Rishikesh'
-import Ranikhet from './pages/Ranikhet'
-import Gallery from './pages/Gallery'
-import Login from './pages/Login'
-import ProtectedRoute from './components/ProtectedRoute'
-import FloatingWhatsApp from './components/FloatingWhatsApp'
-
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
