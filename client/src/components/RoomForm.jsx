@@ -1,23 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
 export default function RoomForm({ room, onSuccess, onCancel }) {
     const [formData, setFormData] = useState({
-        title: '',
-        description: '',
-        price: '',
-        maxGuests: '',
-        image: '',
-        location: ''
+        title: room?.title || '',
+        description: room?.description || '',
+        price: room?.price || '',
+        maxGuests: room?.maxGuests || '',
+        image: room?.image || '',
+        location: room?.location || '',
+        category: room?.category || 'Deluxe',
+        roomNumber: room?.roomNumber || '',
+        status: room?.status || 'Available'
     });
     const [imageFile, setImageFile] = useState(null);
-
-    useEffect(() => {
-        if (room) {
-            setFormData(room);
-        }
-    }, [room]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -43,6 +40,9 @@ export default function RoomForm({ room, onSuccess, onCancel }) {
         data.append('price', formData.price);
         data.append('maxGuests', formData.maxGuests);
         data.append('location', formData.location);
+        data.append('category', formData.category || 'Deluxe');
+        data.append('roomNumber', formData.roomNumber);
+        data.append('status', formData.status || 'Available');
 
         if (imageFile) {
             data.append('image', imageFile);
@@ -61,11 +61,11 @@ export default function RoomForm({ room, onSuccess, onCancel }) {
                 if (!res.ok) throw new Error('Failed to save room');
                 return res.json();
             })
-            .then(data => {
+            .then(() => {
                 toast.success(room ? 'Room updated!' : 'Room created!', { id: toastId });
                 onSuccess();
                 if (!room) {
-                    setFormData({ title: '', description: '', price: '', maxGuests: '', image: '', location: '' });
+                    setFormData({ title: '', description: '', price: '', maxGuests: '', image: '', location: '', roomNumber: '', status: 'Available', category: 'Deluxe' });
                     setImageFile(null);
                 }
             })
@@ -83,6 +83,20 @@ export default function RoomForm({ room, onSuccess, onCancel }) {
                 <input name="location" placeholder="Location (e.g. Shimla)" value={formData.location} onChange={handleChange} className="border p-2 rounded" required />
                 <input name="price" type="number" placeholder="Price (₹)" value={formData.price} onChange={handleChange} className="border p-2 rounded" required />
                 <input name="maxGuests" type="number" placeholder="Max Guests" value={formData.maxGuests} onChange={handleChange} className="border p-2 rounded" required />
+                
+                <select name="category" value={formData.category || 'Deluxe'} onChange={handleChange} className="border p-2 rounded" required>
+                    <option value="Single">Single</option>
+                    <option value="Deluxe">Deluxe</option>
+                    <option value="Suite">Suite</option>
+                </select>
+
+                <input name="roomNumber" placeholder="Room No. (e.g. 101)" value={formData.roomNumber} onChange={handleChange} className="border p-2 rounded" />
+
+                <select name="status" value={formData.status || 'Available'} onChange={handleChange} className="border p-2 rounded" required>
+                    <option value="Available">Available</option>
+                    <option value="Booked">Booked</option>
+                    <option value="Maintenance">Maintenance</option>
+                </select>
 
                 {/* Image Upload Input */}
                 <div className="border p-2 rounded">

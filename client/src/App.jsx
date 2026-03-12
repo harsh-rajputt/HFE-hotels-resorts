@@ -9,6 +9,10 @@ import Rishikesh from './pages/Rishikesh';
 import Ranikhet from './pages/Ranikhet';
 import Gallery from './pages/Gallery';
 import Login from './pages/Login';
+import UserAuth from './pages/UserAuth';
+import RoomsList from './pages/RoomsList';
+import RoomDetail from './pages/RoomDetail';
+import UserDashboard from './pages/UserDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 
@@ -22,6 +26,10 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             <Route path="/login" element={<Login />} />
+            <Route path="/user-auth" element={<UserAuth />} />
+            <Route path="/rooms" element={<RoomsList />} />
+            <Route path="/rooms/:id" element={<RoomDetail />} />
+            <Route path="/user-dashboard" element={<UserDashboard />} />
             <Route path="/shimla" element={<Shimla />} />
             <Route path="/rishikesh" element={<Rishikesh />} />
             <Route path="/ranikhet" element={<Ranikhet />} />

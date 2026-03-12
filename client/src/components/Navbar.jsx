@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar({ variant = 'default' }) {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMobileDestinationsOpen, setIsMobileDestinationsOpen] = useState(false);
+    const { isAuthenticated, user } = useAuth(); // NEW
 
     useEffect(() => {
         const handleScroll = () => {
@@ -20,15 +22,16 @@ export default function Navbar({ variant = 'default' }) {
         <nav className={`fixed w-full z-50 transition-all duration-300 ${isDark ? 'bg-white shadow-md py-4' : 'bg-transparent py-6'}`}>
             <div className="container mx-auto px-4 flex justify-between items-center">
                 {/* Logo */}
-                <div className="flex items-center">
+                <Link to="/">
                     <img src="/logo.png" alt="HFE Logo" className="h-16 object-contain" />
-                </div>
+                </Link>
 
                 {/* Desktop Menu */}
-                <div className="hidden md:flex items-center space-x-8">
-                    <Link to="/" className={`font-sans font-medium hover:text-brand-gold transition-colors ${isDark ? 'text-brand-dark' : 'text-white'}`}>Home</Link>
+                <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+                    <Link to="/" className={`font-sans text-sm tracking-wide font-medium hover:text-brand-gold transition-colors ${isDark ? 'text-brand-dark' : 'text-white'}`}>Home</Link>
+                    <Link to="/rooms" className={`font-sans text-sm tracking-wide font-medium hover:text-brand-gold transition-colors ${isDark ? 'text-brand-dark' : 'text-white'}`}>Rooms</Link>
                     <div className="relative group py-4">
-                        <span className={`font-sans font-medium hover:text-brand-gold transition-colors cursor-pointer ${isDark ? 'text-brand-dark' : 'text-white'}`}>
+                        <span className={`font-sans text-sm tracking-wide font-medium hover:text-brand-gold transition-colors cursor-pointer ${isDark ? 'text-brand-dark' : 'text-white'}`}>
                             Destinations ▾
                         </span>
                         <div className="absolute left-0 top-full w-48 bg-white shadow-xl rounded-b-md overflow-hidden hidden group-hover:block border-t-2 border-brand-gold">
@@ -37,22 +40,30 @@ export default function Navbar({ variant = 'default' }) {
                             <Link to="/ranikhet" className="block px-4 py-3 text-sm text-brand-dark hover:bg-brand-gold hover:text-white transition-colors font-serif">Ranikhet (UK)</Link>
                         </div>
                     </div>
-                    {/* Using a tags for in-page anchors for now, or Link with hash if on different page */}
-                    {/* Since this is a simple replacement, Link to="/#about" works reasonably well with standard browser behavior or needs specific hash handling code. 
-                        For now keeping as 'a href' for hash links is safer for scrolling, BUT 'Link' prevents reload if we are already on home.
-                        Let's use Link.
-                    */}
-                    <a href="/#about" className={`font-sans font-medium hover:text-brand-gold transition-colors ${isDark ? 'text-brand-dark' : 'text-white'}`}>About</a>
-                    <a href="/#contact" className={`font-sans font-medium hover:text-brand-gold transition-colors ${isDark ? 'text-brand-dark' : 'text-white'}`}>Contact</a>
+                    <Link to="/gallery" className={`font-sans text-sm tracking-wide font-medium hover:text-brand-gold transition-colors ${isDark ? 'text-brand-dark' : 'text-white'}`}>Gallery</Link>
+                    <a href="/#contact" className={`font-sans text-sm tracking-wide font-medium hover:text-brand-gold transition-colors ${isDark ? 'text-brand-dark' : 'text-white'}`}>Contact</a>
 
-                    <button className="bg-brand-gold text-white px-6 py-2 rounded-none font-serif hover:bg-opacity-90 transition-all uppercase tracking-wider text-sm">
+                    {isAuthenticated ? (
+                        <Link 
+                            to={user?.role === 'customer' ? '/user-dashboard' : '/admin'}
+                            className="text-brand-gold font-bold text-sm hover:text-brand-dark transition-colors tracking-wide underline"
+                        >
+                            {user?.role === 'customer' ? `Hi, ${user?.name?.split(' ')[0]}` : 'Admin Panel'}
+                        </Link>
+                    ) : (
+                        <Link to="/user-auth" className={`font-sans text-sm tracking-wide font-medium hover:text-brand-gold transition-colors underline ${isDark ? 'text-brand-dark' : 'text-white'}`}>
+                            Login
+                        </Link>
+                    )}
+
+                    <Link to="/rooms" className="bg-brand-gold text-white px-6 py-2 rounded-none font-serif hover:bg-opacity-90 transition-all uppercase tracking-wider text-sm flex items-center justify-center">
                         Book Now
-                    </button>
+                    </Link>
                 </div>
 
                 {/* Mobile Menu Button */}
                 <div
-                    className="md:hidden text-brand-gold text-2xl cursor-pointer"
+                    className={`${isDark ? 'text-brand-dark' : 'text-white'} md:hidden text-2xl cursor-pointer hover:text-brand-gold transition-colors`}
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                 >
                     {isMenuOpen ? '✕' : '☰'}

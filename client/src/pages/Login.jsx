@@ -37,6 +37,7 @@ export default function Login() {
                 toast.error(data.message || 'Login failed', { id: toastId });
             }
         } catch (err) {
+            console.error('Login error:', err);
             setError('Something went wrong. Please try again.');
             toast.error('Connection error', { id: toastId });
         }

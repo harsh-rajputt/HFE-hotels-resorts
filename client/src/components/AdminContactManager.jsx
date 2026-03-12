@@ -4,10 +4,6 @@ export default function AdminContactManager() {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchMessages();
-    }, []);
-
     const fetchMessages = () => {
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
         fetch(`${apiUrl}/contact`)
@@ -18,6 +14,10 @@ export default function AdminContactManager() {
             })
             .catch(err => console.error('Error fetching messages:', err));
     };
+
+    useEffect(() => {
+        fetchMessages();
+    }, []);
 
     const handleDelete = (id) => {
         if (!window.confirm('Are you sure you want to delete this message?')) return;

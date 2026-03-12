@@ -8,6 +8,12 @@ import roomRoutes from './routes/rooms.js';
 import galleryRoutes from './routes/gallery.js';
 import authRoutes from './routes/auth.js';
 import contactRoutes from './routes/contact.js';
+import dashboardRoutes from './routes/dashboard.js';
+import customerRoutes from './routes/customers.js';
+import bookingRoutes from './routes/bookings.js';
+import paymentRoutes from './routes/payments.js';
+import staffRoutes from './routes/staff.js';
+import reviewsRoutes from './routes/reviews.js';
 
 import { errorHandler } from './middleware/errorMiddleware.js';
 
@@ -22,6 +28,12 @@ app.use('/api/rooms', roomRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/staff', staffRoutes);
+app.use('/api/reviews', reviewsRoutes);
 
 app.get('/', (req, res) => {
     res.send('HFE Group Hotel Server is running');

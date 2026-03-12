@@ -17,14 +17,23 @@ export default function Gallery() {
             .catch(err => console.error(err));
     }, []);
 
+    useEffect(() => {
+        if (selectedImage) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [selectedImage]);
+
     const openLightbox = (image) => {
         setSelectedImage(image);
-        document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
     };
 
     const closeLightbox = () => {
         setSelectedImage(null);
-        document.body.style.overflow = 'auto'; // Restore scrolling
     };
 
     return (

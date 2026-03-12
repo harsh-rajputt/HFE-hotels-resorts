@@ -6,10 +6,6 @@ export default function AdminGalleryManager() {
     const [newImage, setNewImage] = useState({ title: '', imageUrl: '', category: 'General' });
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchImages();
-    }, []);
-
     const fetchImages = () => {
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
         fetch(`${apiUrl}/gallery`)
@@ -20,6 +16,10 @@ export default function AdminGalleryManager() {
             })
             .catch(err => console.error('Error fetching images:', err));
     };
+
+    useEffect(() => {
+        fetchImages();
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
