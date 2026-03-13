@@ -26,8 +26,25 @@ export default function DashboardView() {
                 const response = await fetch(`${apiUrl}/dashboard/stats`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const data = await response.json();
-                setStats(data);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    setStats({
+                        totalRooms: data.totalRooms || 0,
+                        totalBookings: data.totalBookings || 0,
+                        totalRevenue: data.totalRevenue || 0,
+                        recentBookings: data.recentBookings || []
+                    });
+                } else {
+                    console.error('Failed to fetch stats, status:', response.status);
+                    // Safe fallback so UI doesn't crash
+                    setStats({
+                        totalRooms: 0,
+                        totalBookings: 0,
+                        totalRevenue: 0,
+                        recentBookings: []
+                    });
+                }
             } catch (error) {
                 console.error('Error fetching stats:', error);
             } finally {
@@ -35,7 +52,11 @@ export default function DashboardView() {
             }
         };
 
-        fetchStats();
+        if (token) {
+            fetchStats();
+        } else {
+            setLoading(false);
+        }
     }, [token]);
 
     if (loading) return <div>Loading dashboard...</div>;
