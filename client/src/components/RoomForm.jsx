@@ -57,9 +57,15 @@ export default function RoomForm({ room, onSuccess, onCancel }) {
             },
             body: data
         })
-            .then(res => {
-                if (!res.ok) throw new Error('Failed to save room');
-                return res.json();
+            .then(async res => {
+                const isJson = res.headers.get('content-type')?.includes('application/json');
+                const data = isJson ? await res.json() : await res.text();
+                
+                if (!res.ok) {
+                    const errorMsg = typeof data === 'string' ? data : data.message || 'Failed to save room';
+                    throw new Error(errorMsg);
+                }
+                return data;
             })
             .then(() => {
                 toast.success(room ? 'Room updated!' : 'Room created!', { id: toastId });
@@ -71,7 +77,7 @@ export default function RoomForm({ room, onSuccess, onCancel }) {
             })
             .catch(err => {
                 console.error(err);
-                toast.error('Error saving room. Please try again.', { id: toastId });
+                toast.error(`Error: ${err.message || 'Please try again'}`, { id: toastId });
             });
     };
 
