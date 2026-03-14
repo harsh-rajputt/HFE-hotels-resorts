@@ -134,4 +134,27 @@ router.post('/customer/login', asyncHandler(async (req, res) => {
     });
 }));
 
+// Reset Customer Password
+router.post('/customer/reset-password', asyncHandler(async (req, res) => {
+    const { email, newPassword } = req.body;
+
+    const customer = await Customer.findOne({ email });
+
+    if (!customer) {
+        res.status(404);
+        throw new Error('No account found with that email address');
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    customer.password = hashedPassword;
+    await customer.save();
+
+    res.json({
+        success: true,
+        message: 'Password reset successfully. You can now login.'
+    });
+}));
+
 export default router;
