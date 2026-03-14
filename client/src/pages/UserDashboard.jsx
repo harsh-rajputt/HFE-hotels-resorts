@@ -101,6 +101,30 @@ export default function UserDashboard() {
         }
     };
 
+    const handleDeleteBooking = async (bookingId) => {
+        if (!window.confirm('Are you sure you want to permanently delete this booking record?')) return;
+
+        const toastId = toast.loading('Deleting booking...');
+        try {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const res = await fetch(`${apiUrl}/bookings/${bookingId}`, {
+                method: 'DELETE',
+                headers: { 
+                    'Authorization': `Bearer ${token}` 
+                }
+            });
+
+            if (res.ok) {
+                toast.success('Booking record deleted', { id: toastId });
+                fetchMyBookings();
+            } else {
+                toast.error('Failed to delete booking', { id: toastId });
+            }
+        } catch (error) {
+            toast.error('Error connecting to server', { id: toastId });
+        }
+    };
+
     const handleLogout = () => {
         logout();
         navigate('/');
@@ -176,12 +200,20 @@ export default function UserDashboard() {
                                         >
                                             View Room
                                         </button>
-                                        {booking.status !== 'Cancelled' && (
+                                        {booking.status !== 'Cancelled' && booking.status !== 'Checked-out' && (
                                             <button 
                                                 onClick={() => handleCancelBooking(booking._id)}
-                                                className="text-red-500 hover:text-red-700 px-4 py-2 bg-red-50 rounded font-bold text-sm"
+                                                className="text-red-500 hover:text-red-700 px-4 py-2 bg-red-50 rounded font-bold text-sm transition-colors"
                                             >
                                                 Cancel Booking
+                                            </button>
+                                        )}
+                                        {(booking.status === 'Cancelled' || booking.status === 'Checked-out') && (
+                                            <button 
+                                                onClick={() => handleDeleteBooking(booking._id)}
+                                                className="text-gray-500 hover:text-red-600 px-4 py-2 bg-gray-100 hover:bg-red-50 border border-gray-200 hover:border-red-100 rounded font-bold text-sm transition-colors"
+                                            >
+                                                Delete History
                                             </button>
                                         )}
                                     </div>
