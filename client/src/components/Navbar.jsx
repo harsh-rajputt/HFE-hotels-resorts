@@ -94,9 +94,33 @@ export default function Navbar({ variant = 'default' }) {
                     <a href="/#about" className="text-brand-dark font-medium hover:text-brand-gold" onClick={() => setIsMenuOpen(false)}>About</a>
                     <a href="/#contact" className="text-brand-dark font-medium hover:text-brand-gold" onClick={() => setIsMenuOpen(false)}>Contact</a>
                     <Link to="/gallery" className="text-brand-dark font-medium hover:text-brand-gold" onClick={() => setIsMenuOpen(false)}>Gallery</Link>
-                    <button className="bg-brand-gold text-white px-6 py-2 rounded-none font-serif hover:bg-opacity-90 transition-all uppercase tracking-wider text-sm w-full">
+                    
+                    {/* Login / Dashboard link for mobile */}
+                    {isAuthenticated ? (
+                        <Link
+                            to={user?.role === 'customer' ? '/user-dashboard' : '/admin'}
+                            onClick={() => setIsMenuOpen(false)}
+                            className="text-brand-gold font-bold hover:text-brand-dark transition-colors"
+                        >
+                            {user?.role === 'customer' ? `Hi, ${user?.name?.split(' ')[0]}` : 'Admin Panel'}
+                        </Link>
+                    ) : (
+                        <Link
+                            to="/user-auth"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="text-brand-dark font-medium hover:text-brand-gold transition-colors"
+                        >
+                            Login / Register
+                        </Link>
+                    )}
+
+                    <Link
+                        to="/rooms"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="bg-brand-gold text-white px-6 py-2 rounded-none font-serif hover:bg-opacity-90 transition-all uppercase tracking-wider text-sm w-full text-center"
+                    >
                         Book Now
-                    </button>
+                    </Link>
                 </div>
             )}
         </nav>
