@@ -13,6 +13,9 @@ export default function UserDashboard() {
     const location = useLocation();
 
     useEffect(() => {
+        // If we have a token but user object is still syncing, wait a moment
+        if (token && !user) return;
+
         if (!isAuthenticated || user?.role !== 'customer') {
             navigate('/user-auth', { replace: true });
             return;

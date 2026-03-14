@@ -53,8 +53,8 @@ router.post('/create-checkout-session', protect, asyncHandler(async (req, res) =
                     },
                 ],
                 mode: 'payment',
-                success_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment-success?txnId=${transactionId}`,
-                cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment-cancel?txnId=${transactionId}`,
+                success_url: `${req.get('origin') || process.env.FRONTEND_URL || 'http://localhost:5173'}/user-dashboard?payment=success&txnId=${transactionId}`,
+                cancel_url: `${req.get('origin') || process.env.FRONTEND_URL || 'http://localhost:5173'}/user-dashboard?payment=cancel&txnId=${transactionId}`,
                 client_reference_id: bookingId,
             });
             res.json({ url: session.url, transactionId });
@@ -66,8 +66,9 @@ router.post('/create-checkout-session', protect, asyncHandler(async (req, res) =
     }
     
     // Mock URL for when there's no stripe configuration
-    // This allows the user to test the flow without setting up stripe keys immediately
-    const mockSuccessUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/user-dashboard?payment=success&txnId=${transactionId}`;
+    // Use the origin from the request to ensure we stay on the same domain (Vercel, Localhost, etc.)
+    const origin = req.get('origin') || process.env.FRONTEND_URL || 'http://localhost:5173';
+    const mockSuccessUrl = `${origin}/user-dashboard?payment=success&txnId=${transactionId}`;
     res.json({ url: mockSuccessUrl, transactionId, mock: true });
 }));
 
