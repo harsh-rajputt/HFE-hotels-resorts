@@ -20,9 +20,22 @@ import { errorHandler } from './middleware/errorMiddleware.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// CORS — allow all origins (Vercel, localhost, mobile browsers)
+const corsOptions = {
+    origin: function (origin, callback) {
+        // Allow requests with no origin (mobile apps, curl, Postman) OR any origin
+        callback(null, true);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight OPTIONS requests
 app.use(express.json());
+
 
 app.use('/api/rooms', roomRoutes);
 app.use('/api/gallery', galleryRoutes);
