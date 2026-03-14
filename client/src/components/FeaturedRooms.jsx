@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function FeaturedRooms() {
     const [rooms, setRooms] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Fetch from backend (ensure server is running on port 5000)
@@ -31,7 +33,11 @@ export default function FeaturedRooms() {
 
                 <div className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
                     {rooms.map(room => (
-                        <div key={room._id} className="group cursor-pointer bg-brand-sand/20 shadow-sm hover:shadow-xl transition-all duration-300">
+                        <div 
+                            key={room._id} 
+                            onClick={() => navigate(`/rooms/${room._id}`)}
+                            className="group cursor-pointer bg-brand-sand/20 shadow-sm hover:shadow-xl transition-all duration-300"
+                        >
                             <div className="relative overflow-hidden h-80">
                                 <img
                                     src={room.image}
