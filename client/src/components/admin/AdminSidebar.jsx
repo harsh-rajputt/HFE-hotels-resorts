@@ -24,7 +24,7 @@ export default function AdminSidebar({ activeTab, setActiveTab, onLogout }) {
     ];
 
     return (
-        <aside className="w-64 bg-white border-r border-gray-200 h-[calc(100vh-64px)] fixed left-0 top-16 overflow-y-auto hidden md:flex flex-col">
+        <aside className="w-64 bg-white border-r border-gray-200 h-[calc(100vh-64px)] fixed left-0 top-16 overflow-y-auto hidden md:flex flex-col z-40">
             <div className="p-4 border-b">
                 <h2 className="text-xl font-bold font-serif text-brand-dark">Admin Panel</h2>
             </div>
