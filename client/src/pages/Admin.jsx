@@ -55,7 +55,7 @@ export default function Admin() {
             <Navbar />
             
             {/* Main content with sidebar layout */}
-            <div className="flex flex-1 pt-16">
+            <div className="flex flex-1 pt-24">
                 <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={handleLogout} />
                 
                 {/* Main panel */}
