@@ -19,6 +19,10 @@ export default function RoomDetail() {
         guests: 1
     });
 
+    // Availability state
+    const [availability, setAvailability] = useState(null); // null | { available, bookedFrom, bookedTo }
+    const [availChecking, setAvailChecking] = useState(false);
+
     // Review Form State
     const [reviewData, setReviewData] = useState({ rating: 5, comment: '' });
 
@@ -61,8 +65,36 @@ export default function RoomDetail() {
     };
 
     const handleBookingChange = (e) => {
-        setBookingData({ ...bookingData, [e.target.name]: e.target.value });
+        const updated = { ...bookingData, [e.target.name]: e.target.value };
+        setBookingData(updated);
+        // Reset availability when dates change
+        setAvailability(null);
     };
+
+    // ── Live availability check (debounced 400ms) ────────────────────────────
+    useEffect(() => {
+        const { checkInDate, checkOutDate } = bookingData;
+        if (!checkInDate || !checkOutDate) return;
+        if (new Date(checkOutDate) <= new Date(checkInDate)) return;
+
+        const timer = setTimeout(async () => {
+            setAvailChecking(true);
+            try {
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                const res = await fetch(
+                    `${apiUrl}/bookings/check-availability?room=${id}&checkIn=${checkInDate}&checkOut=${checkOutDate}`
+                );
+                const data = await res.json();
+                setAvailability(data);
+            } catch {
+                setAvailability(null);
+            } finally {
+                setAvailChecking(false);
+            }
+        }, 400);
+
+        return () => clearTimeout(timer);
+    }, [bookingData.checkInDate, bookingData.checkOutDate, id]);
 
     const calculateTotal = () => {
         if (!bookingData.checkInDate || !bookingData.checkOutDate || !room) return 0;
@@ -78,6 +110,10 @@ export default function RoomDetail() {
         if (!isAuthenticated) {
             toast.error('Please login to book a room');
             navigate('/user-auth', { state: { from: { pathname: `/rooms/${id}` } } });
+            return;
+        }
+        if (availability && !availability.available) {
+            toast.error('This room is not available for the selected dates.');
             return;
         }
 
@@ -106,7 +142,11 @@ export default function RoomDetail() {
                 })
             });
 
-            if (!bookingRes.ok) throw new Error('Booking failed');
+            if (!bookingRes.ok) {
+                const errData = await bookingRes.json();
+                toast.error(errData.message || 'Booking failed. Try again.', { id: toastId });
+                return;
+            }
             const newBooking = await bookingRes.json();
 
             // 2. Obtain Stripe Session (or Mock Session)
@@ -123,7 +163,7 @@ export default function RoomDetail() {
                 })
             });
 
-            if (!paymentRes.ok) throw new Error('Payment sessions failed');
+            if (!paymentRes.ok) throw new Error('Payment session failed');
             const sessionData = await paymentRes.json();
 
             toast.success('Redirecting to secure gateway...', { id: toastId });
@@ -132,7 +172,7 @@ export default function RoomDetail() {
             window.location.href = sessionData.url;
 
         } catch (error) {
-            toast.error('Transaction Failed. Try again.', { id: toastId });
+            toast.error(error.message || 'Transaction failed. Try again.', { id: toastId });
             console.error(error);
         }
     };
@@ -175,7 +215,7 @@ export default function RoomDetail() {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
-            <Navbar />
+            <Navbar variant="dark" />
             <div className="h-24 md:h-32"></div>
 
             <main className="flex-grow container mx-auto px-4 py-8">
@@ -227,14 +267,60 @@ export default function RoomDetail() {
                                     <input type="number" name="guests" min="1" max={room.maxGuests} value={bookingData.guests} onChange={handleBookingChange} className="w-full p-2 border rounded" required />
                                 </div>
                             </div>
-                            
+
+                            {/* ── Availability Banner ── */}
+                            {bookingData.checkInDate && bookingData.checkOutDate && (
+                                <div className="mb-4">
+                                    {availChecking ? (
+                                        <div className="flex items-center gap-2 text-sm text-gray-500 bg-gray-100 rounded-lg px-4 py-3">
+                                            <svg className="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                                            </svg>
+                                            Checking availability…
+                                        </div>
+                                    ) : availability && !availability.available ? (
+                                        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                                                </svg>
+                                                <span className="text-red-700 font-bold text-sm">Room Not Available</span>
+                                            </div>
+                                            <p className="text-red-600 text-xs pl-7">
+                                                Already booked from{' '}
+                                                <strong>{new Date(availability.bookedFrom).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</strong>
+                                                {' '}to{' '}
+                                                <strong>{new Date(availability.bookedTo).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</strong>.
+                                                Please select different dates.
+                                            </p>
+                                        </div>
+                                    ) : availability && availability.available ? (
+                                        <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M20 6L9 17l-5-5"/>
+                                            </svg>
+                                            <span className="font-semibold">Room is Available for your selected dates!</span>
+                                        </div>
+                                    ) : null}
+                                </div>
+                            )}
+
                             <div className="flex justify-between items-center mb-4 text-sm font-bold text-gray-700">
                                 <span>Total Estimate:</span>
                                 <span>₹{calculateTotal()}</span>
                             </div>
 
-                            <button type="submit" className="w-full bg-brand-dark hover:bg-brand-gold text-white py-3 rounded uppercase font-bold transition-colors">
-                                Pay & Book Now
+                            <button
+                                type="submit"
+                                disabled={availChecking || (availability !== null && !availability.available)}
+                                className={`w-full py-3 rounded uppercase font-bold transition-colors text-white ${
+                                    availChecking || (availability !== null && !availability.available)
+                                        ? 'bg-gray-300 cursor-not-allowed'
+                                        : 'bg-brand-dark hover:bg-brand-gold'
+                                }`}
+                            >
+                                {availability && !availability.available ? '🚫 Not Available' : 'Pay & Book Now'}
                             </button>
                         </form>
                     </div>

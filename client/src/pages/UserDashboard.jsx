@@ -177,8 +177,13 @@ export default function UserDashboard() {
                                         <p className="text-sm text-gray-500 mb-1">
                                             <strong>Check-In:</strong> {new Date(booking.checkInDate).toLocaleDateString()} | <strong>Check-Out:</strong> {new Date(booking.checkOutDate).toLocaleDateString()}
                                         </p>
-                                        <p className="text-sm text-gray-500 mb-2">
+                                        <p className="text-sm text-gray-500 mb-1">
                                             <strong>Guests:</strong> {booking.guests} | <strong>Total Amount:</strong> ₹{booking.totalAmount}
+                                        </p>
+                                        <p className="text-xs text-gray-400 mb-2">
+                                            🕐 Booked on: {new Date(booking.bookedAt || booking.createdAt).toLocaleString('en-IN', {
+                                                dateStyle: 'medium', timeStyle: 'short'
+                                            })}
                                         </p>
                                         <div className="flex items-center gap-2">
                                             <span className={`px-2 py-1 text-xs rounded-full font-bold ${
