@@ -2,16 +2,65 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+const UserIcon = ({ size = 26 }) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+    </svg>
+);
+
+function LogoutButton() {
+    const { logout } = useAuth();
+    return (
+        <button
+            onClick={logout}
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors font-sans text-left"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Logout
+        </button>
+    );
+}
+
+function MobileLogoutButton({ onClose }) {
+    const { logout } = useAuth();
+    return (
+        <button
+            onClick={() => { logout(); onClose(); }}
+            className="flex items-center gap-2 text-red-500 font-medium hover:text-red-600 transition-colors"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Logout
+        </button>
+    );
+}
+
 export default function Navbar({ variant = 'default' }) {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMobileDestinationsOpen, setIsMobileDestinationsOpen] = useState(false);
-    const { isAuthenticated, user } = useAuth(); // NEW
+    const { isAuthenticated, user } = useAuth();
 
     useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 50);
-        };
+        const handleScroll = () => setIsScrolled(window.scrollY > 50);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
@@ -21,15 +70,18 @@ export default function Navbar({ variant = 'default' }) {
     return (
         <nav className={`fixed w-full z-50 transition-all duration-300 ${isDark ? 'bg-white shadow-md py-4' : 'bg-transparent py-6'}`}>
             <div className="container mx-auto px-4 flex justify-between items-center">
+
                 {/* Logo */}
                 <Link to="/">
                     <img src="/logo.png" alt="HFE Logo" className="h-16 object-contain" />
                 </Link>
 
-                {/* Desktop Menu */}
+                {/* ── Desktop Menu ── */}
                 <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
                     <Link to="/" className={`font-sans text-sm tracking-wide font-medium hover:text-brand-gold transition-colors ${isDark ? 'text-brand-dark' : 'text-white'}`}>Home</Link>
                     <Link to="/rooms" className={`font-sans text-sm tracking-wide font-medium hover:text-brand-gold transition-colors ${isDark ? 'text-brand-dark' : 'text-white'}`}>Rooms</Link>
+
+                    {/* Destinations dropdown */}
                     <div className="relative group py-4">
                         <span className={`font-sans text-sm tracking-wide font-medium hover:text-brand-gold transition-colors cursor-pointer ${isDark ? 'text-brand-dark' : 'text-white'}`}>
                             Destinations ▾
@@ -40,21 +92,54 @@ export default function Navbar({ variant = 'default' }) {
                             <Link to="/ranikhet" className="block px-4 py-3 text-sm text-brand-dark hover:bg-brand-gold hover:text-white transition-colors font-serif">Ranikhet (UK)</Link>
                         </div>
                     </div>
+
                     <Link to="/gallery" className={`font-sans text-sm tracking-wide font-medium hover:text-brand-gold transition-colors ${isDark ? 'text-brand-dark' : 'text-white'}`}>Gallery</Link>
                     <a href="/#contact" className={`font-sans text-sm tracking-wide font-medium hover:text-brand-gold transition-colors ${isDark ? 'text-brand-dark' : 'text-white'}`}>Contact</a>
 
-                    {isAuthenticated ? (
-                        <Link 
-                            to={user?.role === 'customer' ? '/user-dashboard' : '/admin'}
-                            className="text-brand-gold font-bold text-sm hover:text-brand-dark transition-colors tracking-wide underline"
+                    {/* ── User icon with hover dropdown ── */}
+                    <div className="relative group py-4">
+                        <button
+                            className={`hover:text-brand-gold transition-colors focus:outline-none cursor-pointer ${isDark ? 'text-brand-dark' : 'text-white'}`}
+                            aria-label="User menu"
                         >
-                            {user?.role === 'customer' ? `Hi, ${user?.name?.split(' ')[0]}` : 'Admin Panel'}
-                        </Link>
-                    ) : (
-                        <Link to="/user-auth" className={`font-sans text-sm tracking-wide font-medium hover:text-brand-gold transition-colors underline ${isDark ? 'text-brand-dark' : 'text-white'}`}>
-                            Login
-                        </Link>
-                    )}
+                            <UserIcon size={26} />
+                        </button>
+
+                        {/* Dropdown panel */}
+                        <div className="absolute right-0 top-full w-52 bg-white shadow-xl rounded-b-md overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border-t-2 border-brand-gold z-50">
+                            {isAuthenticated ? (
+                                <>
+                                    {/* Name header */}
+                                    <div className="px-4 py-3 border-b border-gray-100">
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider font-sans">Signed in as</p>
+                                        <p className="text-brand-dark font-bold font-serif truncate mt-0.5">{user?.name}</p>
+                                    </div>
+                                    {/* My Profile */}
+                                    <Link
+                                        to={user?.role === 'customer' ? '/user-dashboard' : '/admin'}
+                                        className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 hover:text-brand-gold transition-colors border-b border-gray-100 font-sans"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+                                        </svg>
+                                        My Profile
+                                    </Link>
+                                    {/* Logout */}
+                                    <LogoutButton />
+                                </>
+                            ) : (
+                                <Link
+                                    to="/user-auth"
+                                    className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 hover:text-brand-gold transition-colors font-sans"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /><polyline points="10 17 15 12 10 7" /><line x1="15" y1="12" x2="3" y2="12" />
+                                    </svg>
+                                    Login / Register
+                                </Link>
+                            )}
+                        </div>
+                    </div>
 
                     <Link to="/rooms" className="bg-brand-gold text-white px-6 py-2 rounded-none font-serif hover:bg-opacity-90 transition-all uppercase tracking-wider text-sm flex items-center justify-center">
                         Book Now
@@ -70,10 +155,11 @@ export default function Navbar({ variant = 'default' }) {
                 </div>
             </div>
 
-            {/* Mobile Menu Dropdown */}
+            {/* ── Mobile Menu Dropdown ── */}
             {isMenuOpen && (
                 <div className="md:hidden bg-white absolute top-full left-0 w-full shadow-xl border-t border-gray-100 py-4 px-6 flex flex-col space-y-4">
                     <Link to="/" className="text-brand-dark font-medium hover:text-brand-gold" onClick={() => setIsMenuOpen(false)}>Home</Link>
+
                     <div className="flex flex-col space-y-2">
                         <div
                             className="flex justify-between items-center text-brand-dark font-medium hover:text-brand-gold cursor-pointer"
@@ -82,7 +168,6 @@ export default function Navbar({ variant = 'default' }) {
                             <span>Destinations</span>
                             <span>{isMobileDestinationsOpen ? '▴' : '▾'}</span>
                         </div>
-
                         {isMobileDestinationsOpen && (
                             <div className="flex flex-col space-y-2 pl-4 border-l-2 border-brand-sand mt-2">
                                 <Link to="/shimla" className="text-gray-600 hover:text-brand-gold text-sm block py-1" onClick={() => setIsMenuOpen(false)}>Shimla (HP)</Link>
@@ -91,25 +176,38 @@ export default function Navbar({ variant = 'default' }) {
                             </div>
                         )}
                     </div>
+
                     <a href="/#about" className="text-brand-dark font-medium hover:text-brand-gold" onClick={() => setIsMenuOpen(false)}>About</a>
                     <a href="/#contact" className="text-brand-dark font-medium hover:text-brand-gold" onClick={() => setIsMenuOpen(false)}>Contact</a>
                     <Link to="/gallery" className="text-brand-dark font-medium hover:text-brand-gold" onClick={() => setIsMenuOpen(false)}>Gallery</Link>
-                    
-                    {/* Login / Dashboard link for mobile */}
+
+                    {/* Mobile user section */}
                     {isAuthenticated ? (
-                        <Link
-                            to={user?.role === 'customer' ? '/user-dashboard' : '/admin'}
-                            onClick={() => setIsMenuOpen(false)}
-                            className="text-brand-gold font-bold hover:text-brand-dark transition-colors"
-                        >
-                            {user?.role === 'customer' ? `Hi, ${user?.name?.split(' ')[0]}` : 'Admin Panel'}
-                        </Link>
+                        <>
+                            <div className="border-t border-gray-100 pt-3 flex flex-col space-y-3">
+                                <p className="text-xs text-gray-400 uppercase tracking-wider font-sans">
+                                    Signed in as <span className="font-bold text-brand-dark">{user?.name?.split(' ')[0]}</span>
+                                </p>
+                                <Link
+                                    to={user?.role === 'customer' ? '/user-dashboard' : '/admin'}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="text-brand-dark font-medium hover:text-brand-gold transition-colors flex items-center gap-2"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+                                    </svg>
+                                    My Profile
+                                </Link>
+                                <MobileLogoutButton onClose={() => setIsMenuOpen(false)} />
+                            </div>
+                        </>
                     ) : (
                         <Link
                             to="/user-auth"
                             onClick={() => setIsMenuOpen(false)}
-                            className="text-brand-dark font-medium hover:text-brand-gold transition-colors"
+                            className="text-brand-dark hover:text-brand-gold transition-colors flex items-center gap-2 font-medium"
                         >
+                            <UserIcon size={20} />
                             Login / Register
                         </Link>
                     )}
@@ -126,4 +224,3 @@ export default function Navbar({ variant = 'default' }) {
         </nav>
     );
 }
-
