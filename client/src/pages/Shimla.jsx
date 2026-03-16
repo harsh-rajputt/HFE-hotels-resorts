@@ -11,7 +11,7 @@ export default function Shimla() {
 
     return (
         <div className="min-h-screen bg-white">
-            <Navbar />
+            <Navbar variant="dark" />
 
             {/* Spacer for fixed navbar */}
             <div className="h-24 md:h-32"></div>

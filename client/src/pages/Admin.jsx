@@ -52,7 +52,7 @@ export default function Admin() {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             {/* Top Navbar */}
-            <Navbar />
+            <Navbar variant="dark" />
             
             {/* Main content with sidebar layout */}
             <div className="flex flex-1 pt-24">

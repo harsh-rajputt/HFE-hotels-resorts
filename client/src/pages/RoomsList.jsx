@@ -42,7 +42,7 @@ export default function RoomsList() {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
-            <Navbar />
+            <Navbar variant="dark" />
             <div className="h-24 md:h-32"></div>
 
             <main className="flex-grow container mx-auto px-4 py-8">
