@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 /* ── Intersection Observer ── */
 function useInView(threshold = 0.15) {
@@ -28,6 +29,8 @@ function ContactForm() {
         e.preventDefault();
         setStatus('sending');
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        
+        const toastId = toast.loading('Sending message...');
 
         try {
             const res = await fetch(`${apiUrl}/contact`, {
@@ -37,19 +40,17 @@ function ContactForm() {
             });
 
             if (res.ok) {
-                setStatus('success');
+                setStatus('');
                 setFormData({ name: '', email: '', subject: '', phone: '', message: '' });
-                alert('Message sent successfully!');
+                toast.success('Message sent successfully!', { id: toastId });
             } else {
-                setStatus('error');
-                alert('Failed to send message. Please try again.');
+                setStatus('');
+                toast.error('Failed to send message. Please try again.', { id: toastId });
             }
         } catch (error) {
             console.error(error);
-            setStatus('error');
-            alert('Error sending message.');
-        } finally {
             setStatus('');
+            toast.error('Error sending message. Check your connection.', { id: toastId });
         }
     };
 

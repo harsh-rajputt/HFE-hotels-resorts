@@ -1,6 +1,7 @@
 import express from 'express';
 import Gallery from '../models/Gallery.js';
 import upload from '../config/cloudinary.js';
+import { verifyToken as protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST new image
-router.post('/', upload.single('image'), async (req, res) => {
+router.post('/', protect, upload.single('image'), async (req, res) => {
     try {
         const galleryData = {
             title: req.body.title,
@@ -44,7 +45,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 });
 
 // DELETE image
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', protect, async (req, res) => {
     try {
         const image = await Gallery.findById(req.params.id);
         if (!image) return res.status(404).json({ message: 'Image not found' });

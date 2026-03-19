@@ -77,12 +77,11 @@ export default function Navbar({ variant = 'default' }) {
     /* Scroll detect with throttling */
     useEffect(() => {
         const handleScroll = () => {
-            const shouldScroll = window.scrollY > 50;
-            if (isScrolled !== shouldScroll) setIsScrolled(shouldScroll);
+            setIsScrolled(window.scrollY > 50);
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [isScrolled]);
+    }, []);
 
     /* Close menu on window resize back to desktop */
     useEffect(() => {

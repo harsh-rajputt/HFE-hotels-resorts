@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 
 export default function AdminGalleryManager() {
     const [images, setImages] = useState([]);
     const [newImage, setNewImage] = useState({ title: '', imageUrl: '', category: 'General' });
     const [loading, setLoading] = useState(true);
+    const { token } = useAuth();
 
     const fetchImages = () => {
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -45,6 +47,9 @@ export default function AdminGalleryManager() {
 
         fetch(`${apiUrl}/gallery`, {
             method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
             body: formData
         })
             .then(res => res.json())
@@ -64,7 +69,12 @@ export default function AdminGalleryManager() {
         if (!window.confirm('Are you sure you want to delete this image?')) return;
 
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-        fetch(`${apiUrl}/gallery/${id}`, { method: 'DELETE' })
+        fetch(`${apiUrl}/gallery/${id}`, { 
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(res => {
                 if (res.ok) {
                     setImages(images.filter(img => img._id !== id));

@@ -2,7 +2,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import FloatingWhatsApp from '../components/FloatingWhatsApp';
+
+import img15 from '../assets/img15.jpeg';
+import img16 from '../assets/img16.jpeg';
+import img17 from '../assets/img17.jpeg';
+import img18 from '../assets/img18.jpeg';
+import img19 from '../assets/img19.jpeg';
+import img20 from '../assets/img20.jpeg';
+import img21 from '../assets/img21.jpeg';
+
+const galleryImages = [img15, img16, img17, img18, img19, img20, img21];
 
 function useInView(threshold = 0.15) {
     const ref = useRef(null);
@@ -128,8 +137,36 @@ export default function Ranikhet() {
                 </div>
             </div>
 
+            {/* ── Location Gallery ── */}
+            <div className="bg-white py-20">
+                <div className="container mx-auto px-6">
+                    <div className="text-center mb-12">
+                        <span className="text-brand-gold font-display uppercase tracking-[0.3em] text-xs font-bold">Discover</span>
+                        <h2 className="text-3xl md:text-4xl font-serif text-brand-dark mt-3">Glimpses of Ranikhet</h2>
+                        <div className="w-16 h-px bg-brand-gold mx-auto mt-6" />
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px]">
+                        {galleryImages.map((img, i) => (
+                            <div 
+                                key={i} 
+                                className={`relative group overflow-hidden rounded-sm shadow-md ${
+                                    i === 0 ? 'col-span-2 row-span-2' : 
+                                    i === 3 ? 'col-span-2 row-span-1' : ''
+                                }`}
+                            >
+                                <img 
+                                    src={img} 
+                                    alt={`Ranikhet view ${i + 1}`} 
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                                />
+                                <div className="absolute inset-0 bg-brand-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
             <Footer />
-            <FloatingWhatsApp />
         </div>
     );
 }

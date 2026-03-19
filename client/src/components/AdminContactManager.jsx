@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 export default function AdminContactManager() {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { token } = useAuth();
 
     const fetchMessages = () => {
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -23,7 +25,12 @@ export default function AdminContactManager() {
         if (!window.confirm('Are you sure you want to delete this message?')) return;
 
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-        fetch(`${apiUrl}/contact/${id}`, { method: 'DELETE' })
+        fetch(`${apiUrl}/contact/${id}`, { 
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(res => {
                 if (res.ok) {
                     setMessages(messages.filter(msg => msg._id !== id));

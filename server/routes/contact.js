@@ -1,10 +1,11 @@
 import express from 'express';
 import Contact from '../models/Contact.js';
+import { verifyToken as protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 // GET all messages (for admin)
-router.get('/', async (req, res) => {
+router.get('/', protect, async (req, res) => {
     try {
         const messages = await Contact.find().sort({ createdAt: -1 });
         res.json(messages);
@@ -13,7 +14,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// POST new message
+// POST new message (public endpoint for users to submit form)
 router.post('/', async (req, res) => {
     const contact = new Contact({
         name: req.body.name,
@@ -31,8 +32,8 @@ router.post('/', async (req, res) => {
     }
 });
 
-// DELETE message
-router.delete('/:id', async (req, res) => {
+// DELETE message (for admin)
+router.delete('/:id', protect, async (req, res) => {
     try {
         await Contact.findByIdAndDelete(req.params.id);
         res.json({ message: 'Message deleted' });
